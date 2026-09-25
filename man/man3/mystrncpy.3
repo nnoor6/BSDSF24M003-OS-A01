@@ -1,0 +1,27 @@
+.TH MYSTRNCPY 3 "2024" "libmyutils 0.4.1" "Library Functions Manual"
+.SH NAME
+mystrncpy \- copy a fixed number of bytes from a string
+.SH SYNOPSIS
+.nf
+#include "mystfunctions.h"
+int mystrncpy(char *dest, const char *src, int n);
+.fi
+.SH DESCRIPTION
+.B mystrncpy
+copies at most
+.I n
+bytes from
+.I src
+into
+.IR dest .
+If
+.I src
+is shorter than
+.IR n ,
+the remainder of
+.I dest
+is padded with null bytes.
+.SH RETURN VALUE
+Returns the number of bytes written to dest.
+.SH AUTHOR
+Noor <nnoor6@example.com>

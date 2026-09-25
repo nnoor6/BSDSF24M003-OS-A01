@@ -1,0 +1,19 @@
+.TH MYSTRCPY 3 "2024" "libmyutils 0.4.1" "Library Functions Manual"
+.SH NAME
+mystrcpy \- copy a string
+.SH SYNOPSIS
+.nf
+#include "mystfunctions.h"
+int mystrcpy(char *dest, const char *src);
+.fi
+.SH DESCRIPTION
+.B mystrcpy
+copies the null-terminated string
+.I src
+(including the terminating null byte) into the buffer pointed to by
+.IR dest .
+The strings may not overlap.
+.SH RETURN VALUE
+Returns the number of characters copied (excluding the null byte).
+.SH AUTHOR
+Noor <nnoor6@example.com>

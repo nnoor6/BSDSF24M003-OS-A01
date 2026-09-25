@@ -1,3 +1,4 @@
+PREFIX ?= /usr/local
 all: bin/client_static bin/client_dynamic
 
 CFLAGS = -Wall -Iinclude -fPIC
@@ -30,3 +31,17 @@ obj/myfilefunctions.o: source/myfilefunctions.c
 
 clean:
 	rm -f obj/*.o bin/client_static bin/client_dynamic lib/libmyutils.a lib/libmyutils.so
+install: bin/client_dynamic
+	install -d $(DESTDIR)$(PREFIX)/bin
+	install -m 755 bin/client_dynamic $(DESTDIR)$(PREFIX)/bin/client
+	install -d $(DESTDIR)$(PREFIX)/share/man/man3
+	install -m 644 man/man3/*.3 $(DESTDIR)$(PREFIX)/share/man/man3/
+
+uninstall:
+	rm -f $(DESTDIR)$(PREFIX)/bin/client
+	rm -f $(DESTDIR)$(PREFIX)/share/man/man3/mystrlen.3
+	rm -f $(DESTDIR)$(PREFIX)/share/man/man3/mystrcpy.3
+	rm -f $(DESTDIR)$(PREFIX)/share/man/man3/mystrncpy.3
+	rm -f $(DESTDIR)$(PREFIX)/share/man/man3/mystrcat.3
+	rm -f $(DESTDIR)$(PREFIX)/share/man/man3/wordCount.3
+	rm -f $(DESTDIR)$(PREFIX)/share/man/man3/mygrep.3

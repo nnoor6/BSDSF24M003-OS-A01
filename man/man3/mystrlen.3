@@ -1,0 +1,19 @@
+.TH MYSTRLEN 3 "2024" "libmyutils 0.4.1" "Library Functions Manual"
+.SH NAME
+mystrlen \- compute the length of a string
+.SH SYNOPSIS
+.nf
+#include "mystfunctions.h"
+int mystrlen(const char *s);
+.fi
+.SH DESCRIPTION
+.B mystrlen
+returns the number of characters in the null-terminated string
+.IR s ,
+not counting the terminating null byte.
+.SH RETURN VALUE
+Returns the length of the string as an int.
+.SH AUTHOR
+Noor <nnoor6@example.com>
+
+
