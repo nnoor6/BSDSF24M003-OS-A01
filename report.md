@@ -140,3 +140,42 @@ This tells us the dynamic loader is responsible for:
 We can either tell the loader where our library is at runtime
 (LD_LIBRARY_PATH), or bake the search path into the binary at link time
 (-Wl,-rpath), or install the library into a system location.
+
+## Part 5 — Man Pages & Installation
+
+### Q1: What is a man page and why is it important in professional software?
+A man page (short for "manual page") is the standard Unix/Linux
+documentation format for programs, system calls, and library functions.
+Man pages are viewed with the `man` command and are organised into
+numbered sections (section 1 = user programs, section 3 = library
+functions, etc.).
+
+They are important because:
+- They are available offline, on every system, without network access.
+- They are consistent — every tool uses the same section structure
+  (NAME, SYNOPSIS, DESCRIPTION, RETURN VALUE, AUTHOR).
+- They are the first thing experienced users consult before asking for help.
+- They are a professional expectation: any library a user installs should
+  have man pages.
+
+In this project we documented each function (mystrlen, mystrcpy,
+mystrncpy, mystrcat, wordCount, mygrep) in its own section-3 man page.
+
+### Q2: What does the Makefile `install` target do?
+The `install:` target copies the compiled executable and man pages from
+the project tree into system-wide locations so any user can run the
+program and read its docs from anywhere:
+
+- `install -d $(PREFIX)/bin` creates /usr/local/bin if missing.
+- `install -m 755 bin/client_dynamic $(PREFIX)/bin/client` copies the
+  executable with mode 755 (executable, world-readable).
+- `install -d $(PREFIX)/share/man/man3` creates the man directory.
+- `install -m 644 man/man3/*.3 $(PREFIX)/share/man/man3/` copies the
+  man pages with mode 644.
+
+The `PREFIX ?= /usr/local` variable allows the user to override the
+install prefix (e.g., `make install PREFIX=$HOME/.local`). The `DESTDIR`
+variable is used by packagers to install into a staging directory.
+
+After `sudo make install`, the command `client` works from any directory
+and `man mystrlen` displays our documentation.
