@@ -87,3 +87,56 @@ into the final executable. At runtime the program does not need
 `libmyutils.a` — all the code it uses is already inside `client_static`.
 This is why static executables are self-contained but larger: the library
 code is duplicated into every program that links against it.
+
+## Part 4 — Dynamic Library
+
+### Q1: What is Position-Independent Code (-fPIC) and why is it a fundamental requirement for creating shared libraries?
+-fPIC tells the compiler to generate code that does not rely on being
+loaded at a fixed memory address. Instead of using absolute addresses for
+functions and variables, PIC uses relative addressing (via a global offset
+table, or GOT). Shared libraries are loaded into an arbitrary location in
+the process's address space at runtime — the OS chooses the address based
+on what's already mapped. If the code used absolute addresses, it would
+break whenever it was loaded somewhere other than the compile-time guess.
+Without -fPIC, the linker refuses to build a .so on 64-bit Linux
+("relocation R_X86_64_32 against ... can not be used when making a shared
+object").
+
+### Q2: Explain the difference in file size between your static and dynamic clients. Why does this difference exist?
+In this project the difference is small (both clients are 17K) because our
+library contains only six tiny functions. In a real project, the difference
+would be large: the static client contains a copy of every function it uses
+from the library, while the dynamic client contains only a reference to the
+library name. The dynamic client is smaller because:
+- Its own code (main.o) is the only compiled code it contains.
+- libmyutils.so is loaded into memory once and shared by all processes
+  that need it.
+- The static client duplicates library code into every executable that
+  links against it.
+
+The .so file itself (16K) is larger than the .a (4.6K) because PIC code
+carries extra relocation metadata, but the .a is duplicated into every
+statically-linked program.
+
+### Q3: What is the LD_LIBRARY_PATH environment variable? Why was it necessary to set it for your program to run, and what does this tell you about the responsibilities of the operating system's dynamic loader?
+LD_LIBRARY_PATH is an environment variable that contains a colon-separated
+list of directories. When a dynamically linked program starts, the OS
+dynamic loader (ld-linux.so) reads this variable and searches those
+directories FIRST, before falling back to the system defaults
+(/lib, /usr/lib, /etc/ld.so.cache).
+
+We had to set it because our library libmyutils.so lives in a project-local
+lib/ directory that is not registered with the system. Without
+LD_LIBRARY_PATH the loader had no way to find it, producing the error:
+"error while loading shared libraries: libmyutils.so: cannot open shared
+object file".
+
+This tells us the dynamic loader is responsible for:
+- Locating every shared library a program needs at startup.
+- Mapping them into the process's address space.
+- Resolving undefined symbols to their definitions in those libraries.
+- Running library initialization code before transferring control to main().
+
+We can either tell the loader where our library is at runtime
+(LD_LIBRARY_PATH), or bake the search path into the binary at link time
+(-Wl,-rpath), or install the library into a system location.
